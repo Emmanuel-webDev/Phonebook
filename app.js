@@ -92,16 +92,18 @@ app.post('/Login', async(req, res)=>{
 })
 
 //middleware for checking tokens
-const authorization = (req, res, next)=>{
+const authorization = async (req, res, next)=>{
     const token = req.cookies.access_token
     if(!token){
         return res.status(403).send('<h1> Unauthorized activity </h1>');
     }
-    try{
-         const verify = jwt.verify(token, JWT_SECRET);
-    }catch{
-        return res.status(403).send({message:"Error: Forbideen"})
-    }
+        
+    const verify = jwt.verify(token, JWT_SECRET);
+    const users = await user.findById(verify.id)
+    req.user = users
+          if(!verify){ 
+            return res.status(403).send({message:"Error: Forbideen"})
+          }
    
     next()
     
@@ -110,7 +112,11 @@ const authorization = (req, res, next)=>{
 //get Contacts
 app.get('/Contacts', authorization,  async (req, res)=>{
 
-    const contacts = await phone.find()
+    const contacts = await phone.aggregate([
+          {
+        $match: {created_by: req.user._id}
+          }
+]).sort({_id: -1})
     
    //  const contacts = await phone.find();
     res.status(200).render('contacts', {contacts : contacts})
@@ -126,7 +132,8 @@ app.post('/newContacts', authorization, async (req,res)=>{
     const newContact = new phone({
         Name: req.body.Name,
         Tel: req.body.Tel,
-        created_at:new Date().toLocaleDateString()
+        created_at:new Date().toLocaleDateString(),
+        created_by: req.user._id
     })
     await newContact.save();
     res.redirect('/Contacts')
