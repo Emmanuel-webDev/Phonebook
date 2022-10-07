@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Alkalami&display=swap');
+*{
+    font-family: 'Alkalami', serif;
+}
 @media (min-width: 230px) {
     body{
         width: 100%;
