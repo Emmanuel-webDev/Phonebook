@@ -39,15 +39,27 @@
 
    li{
         list-style: none;
+        margin-top: 3%;
     }
 
-    hr{
-        border: 1px solid;
-    }
+
 
     h1,h3{
         text-align: center;
      }
+
+     article{
+        display:flex;
+        width:50%;
+        justify-content:space-around;
+        padding:0;
+        margin:0;
+    }
+
+    article img{
+        width:35%;
+    }
+
 }
 
 @media (min-width:990px) {
@@ -88,14 +100,28 @@
     ul{
         width:80%;
         padding: 0;
-        margin: 2% 5%;
+        margin: 2% 3%;
     }
 
    li{
         list-style: none;
+        margin-top: 3%;
     }
 
     hr{
         border: 1px solid;
     }
+
+    article{
+        display:flex;
+        width:50%;
+        justify-content:space-between;
+        padding:0;
+        margin:0;
+    }
+
+    article img{
+        width:30%;
+    }
+
 }

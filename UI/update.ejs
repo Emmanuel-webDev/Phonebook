@@ -18,7 +18,7 @@
 
     </header>
     <main>
-        <form action="/update/<%= contact._id %>" method="POST">  
+        <form action="/update/<%= contact._id %>" method="POST" enctype="multipart/form-data">  
             <p>
                 <label for="mail">Name</label>
                 <input type="text" name="Name" id="mail" value="<%= contact.Name %>">
@@ -27,6 +27,11 @@
             <p>
                 <label for="pass">Tel</label>
                 <input type="tel" name="Tel" id="pass" value="<%= contact.Tel %>">
+            </p>
+
+            <p>
+                <label for="image">Contact-image</label>
+                <input type="file" name="img" id="image" value="<%= contact.img %>">
             </p>
             
             <button class="btn">Update</button>

@@ -12,16 +12,26 @@ const user = require('./Model/user')
 
 const cookie = require('cookie-parser')
 
+require('dotenv').config();
+
+const multer = require('multer');
+const upload = multer({storage: multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, 'images')
+    },
+    filename: function(req,file,cb){
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})})
 
 const app = express()
-
-const JWT_SECRET = "qwwfdhfjhrtgryhtjtjtjntrjhgfuhrijfurhgufhrihfurufhehojdfrfnghng"
 
 mongoose.connect('mongodb://127.0.0.1:27017/phonebook', {UseNewUrlParser: true}).then(()=>{
 
 app.use(express.json());
 app.use(cookie());
 app.use(express.static('public'))
+app.use('/images',  express.static('images'))
 app.use(express.urlencoded({extended: true}));
 
 app.set("views", "UI")
@@ -43,6 +53,12 @@ app.post('/signUp', async (req, res)=>{
 
     if(!Username || !Email || !password){
         return res.send({message: 'Fill inputs'})
+     }
+
+     //Email checking
+     const userExists = await user.findOne({Email: Email})
+     if(userExists){
+        res.redirect('/signUp');
      }
 
     //passsword hashing
@@ -80,7 +96,7 @@ app.post('/Login', async(req, res)=>{
        
 
   //Registering tokens
-  const token = jwt.sign({id: existingUser._id, Email: existingUser.Email}, JWT_SECRET, {expiresIn: "3d"})
+  const token = jwt.sign({id: existingUser._id, Email: existingUser.Email}, process.env.JWT_SECRET, {expiresIn: "3d"})
   if(!token){
     return res.redirect('/loginUser')
   }
@@ -98,7 +114,7 @@ const authorization = async (req, res, next)=>{
         return res.status(403).send('<h1> Unauthorized activity </h1>');
     }
         
-    const verify = jwt.verify(token, JWT_SECRET);
+    const verify = jwt.verify(token, process.env.JWT_SECRET);
     const users = await user.findById(verify.id)
     req.user = users
           if(!verify){ 
@@ -128,11 +144,12 @@ app.get('/NewContact', authorization, (req, res)=>{
 })
 
 //create Contacts
-app.post('/newContacts', authorization, async (req,res)=>{
+app.post('/newContacts', authorization, upload.single('img'), async (req,res)=>{
     const newContact = new phone({
         Name: req.body.Name,
         Tel: req.body.Tel,
-        created_at:new Date().toLocaleDateString(),
+        img: req.file.path,
+        created_at:new Date(),
         created_by: req.user._id
     })
     await newContact.save();
@@ -145,10 +162,11 @@ app.get('/updates/:id', authorization, async (req,res)=>{
 })
 
 //updating Contact
-app.post('/update/:id', authorization, async(req, res)=>{
+app.post('/update/:id', authorization, upload.single('img'), async(req, res)=>{
 const updateContact = await phone.findByIdAndUpdate({_id: req.params.id}, {
     Name: req.body.Name,
     Tel: req.body.Tel,
+    img: req.file.path,
     created_at: new Date().toLocaleDateString()
 })
 res.status(200).redirect('/Contacts');
@@ -166,7 +184,7 @@ app.post('/logout', authorization, (req, res)=>{
 })
 
 //searchbox
-app.post('/getContacts', async (req, res)=>{
+app.post('/getContacts', authorization, async (req, res)=>{
     const {Name} = req.body
     const payload = req.body.payload.trim();
     const search = await phone.find({Name: {$regex: new RegExp('^'+payload+'.*','i')}}).exec();
@@ -178,8 +196,8 @@ app.get('/search', (req, res)=>{
     res.status(200).render('search')
 })
 
-app.listen(3030, ()=>{
-    console.log("Server running on 127.0.0.1:3030")
+app.listen(process.env.PORT, ()=>{
+    console.log(`Server running on ${process.env.PORT}`)
 })
 
 })

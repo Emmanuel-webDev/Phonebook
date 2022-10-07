@@ -9,6 +9,9 @@ const schema = mongoose.Schema({
     type: Number,
     required: true
    },
+   img:{
+    type: String
+   },
    created_at: {type : Date, default: new Date()},
    created_by:{
     type: mongoose.Schema.Types.ObjectId,

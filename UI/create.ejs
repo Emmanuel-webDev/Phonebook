@@ -19,16 +19,23 @@
     
     <main>
         <h1>Add new contacts</h1>
-        <form action="/newContacts" method="POST">  
-            <p>
+        <form action="/newContacts" method="POST" enctype="multipart/form-data">  
+    
+                 <p>
                 <label for="mail">Name</label>
                 <input type="text" name="Name" id="mail"  required>
             </p>
+           
             
             <p>
                 <label for="pass">Tel</label>
                 <input type='tel' name="Tel" id="pass"  required>
                 <section id="check"></section>
+            </p>
+
+            <p>
+                <label for="image">Contact-image</label>
+                <input type="file" name="img" id="image">
             </p>
             
             <button class="btn">Save Contact</button>

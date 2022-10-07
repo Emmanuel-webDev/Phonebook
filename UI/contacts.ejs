@@ -30,16 +30,19 @@
             <% for(const numbers of contacts){ %>
             
          <li>
-                <h2><%= numbers.Name %></h2>
-                <h5><%= numbers.Tel %></h5>
-                <p><%= numbers.created_at %></p>
-                <section>
+            <article id="sec">
+                  <img src="<%= numbers.img %>" alt="Contact-image">
+                <h1><%= numbers.Name %></h1>
+            </article>
+                <h2>Tel: <%= numbers.Tel %></h2>
+                <p>Created: <%= numbers.created_at %></p>
+                <section id="btn">
                     <a href="/updates/<%= numbers._id %>" class="btn">Update contact</a>
                 <form action="/del/<%= numbers._id %>" method="POST">
                     <button class="btn">Delete</button>
                 </form> 
                 </section>
-                <hr>
+        
                
         </li>
          
