@@ -134,7 +134,6 @@ app.get('/Contacts', authorization,  async (req, res)=>{
           }
 ]).sort({_id: -1})
     
-   //  const contacts = await phone.find();
     res.status(200).render('contacts', {contacts : contacts})
 })
 
@@ -174,7 +173,7 @@ res.status(200).redirect('/Contacts');
 
 //Deleting
 app.post('/del/:id', authorization, async (req, res)=>{
-    const delContact = await phone.findByIdAndDelete(req.params.id);
+    const delContact = await phone.findByIdAndRemove(req.params.id);
     res.status(200).redirect('/Contacts')
 })
 
@@ -192,7 +191,7 @@ app.post('/getContacts', authorization, async (req, res)=>{
     res.send({payload: search})
 })
 
-app.get('/search', (req, res)=>{
+app.get('/search', authorization, (req, res)=>{
     res.status(200).render('search')
 })
 
