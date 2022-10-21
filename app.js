@@ -12,17 +12,12 @@ const user = require('./Model/user')
 
 const cookie = require('cookie-parser')
 
+const cloudinary = require('./cloudinary')
+
 require('dotenv').config();
 
 const multer = require('multer');
-const upload = multer({storage: multer.diskStorage({
-    destination: function(req, file, cb){
-        cb(null, 'images')
-    },
-    filename: function(req,file,cb){
-        cb(null, Date.now() + '-' + file.originalname)
-    }
-})})
+const upload = multer({storage: multer.diskStorage({})})
 
 const app = express()
 
@@ -144,10 +139,11 @@ app.get('/NewContact', authorization, (req, res)=>{
 
 //create Contacts
 app.post('/newContacts', authorization, upload.single('img'), async (req,res)=>{
+    const uploads = await cloudinary.v2.uploader.upload(req.file.path)
     const newContact = new phone({
         Name: req.body.Name,
         Tel: req.body.Tel,
-        img: req.file.path,
+        img: uploads.secure_url,
         created_at:new Date(),
         created_by: req.user._id
     })
@@ -162,10 +158,11 @@ app.get('/updates/:id', authorization, async (req,res)=>{
 
 //updating Contact
 app.post('/update/:id', authorization, upload.single('img'), async(req, res)=>{
+    const uploads = await cloudinary.v2.uploader.upload(req.file.path)
 const updateContact = await phone.findByIdAndUpdate({_id: req.params.id}, {
     Name: req.body.Name,
     Tel: req.body.Tel,
-    img: req.file.path,
+    img: uploads.secure_url,
     created_at: new Date().toLocaleDateString()
 })
 res.status(200).redirect('/Contacts');
