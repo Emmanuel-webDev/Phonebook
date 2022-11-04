@@ -21,7 +21,7 @@ const upload = multer({storage: multer.diskStorage({})})
 
 const app = express()
 
-mongoose.connect('mongodb://127.0.0.1:27017/phonebook', {UseNewUrlParser: true}).then(()=>{
+mongoose.connect(process.env.URI, {UseNewUrlParser: true}).then(()=>{
 
 app.use(express.json());
 app.use(cookie());
